@@ -1,3 +1,7 @@
+import sys
+
+sys.path.append("/home/perite/coach")
+
 from peewee import fn
 from .models import Client, Coach, Session, GroupSessionToClients, GroupSession
 

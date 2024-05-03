@@ -1,3 +1,7 @@
+import sys
+
+sys.path.append("/home/perite/coach")
+
 from flask_login import LoginManager, UserMixin, login_user
 from flask import redirect, request
 

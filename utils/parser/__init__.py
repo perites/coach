@@ -1,3 +1,7 @@
+import sys
+
+sys.path.append("/home/perite/coach")
+
 import csv
 from database import Client, Coach, Session
 from datetime import datetime

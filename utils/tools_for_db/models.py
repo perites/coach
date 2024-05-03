@@ -1,3 +1,7 @@
+import sys
+
+sys.path.append("/home/perite/coach")
+
 from peewee import PostgresqlDatabase, Model, TextField, DateField, TimeField, ForeignKeyField, \
     IntegerField, DateTimeField, BooleanField
 import confg

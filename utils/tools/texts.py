@@ -1,3 +1,7 @@
+import sys
+
+sys.path.append("/home/perite/coach")
+
 import re
 
 import confg

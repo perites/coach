@@ -1,3 +1,7 @@
+import sys
+
+sys.path.append("/home/perite/coach")
+
 from .changeable_confg import *
 from .sessions_type_confg import *
 

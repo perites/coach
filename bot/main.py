@@ -1,3 +1,7 @@
+import sys
+
+sys.path.append("/home/perite/coach")
+
 import datetime
 import threading
 import time
@@ -32,6 +36,10 @@ CallbackHandler.callers = {
     "client": ClientCallbackHandler(),
     "coach": CoachCallbackHandler()
 }
+
+import sys
+
+print(sys.path)
 
 
 @shared_variables.bot.message_handler(commands=['start'])

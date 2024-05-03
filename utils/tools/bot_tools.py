@@ -1,4 +1,8 @@
 # import logging
+import sys
+
+sys.path.append("/home/perite/coach")
+
 from bot.bot_logging import bot_logger, bot_error_logger
 from telebot import types, apihelper
 

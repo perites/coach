@@ -1,3 +1,7 @@
+import sys
+
+sys.path.append("/home/perite/coach")
+
 import telebot
 import confg
 import utils.session_types as session_types

@@ -1,3 +1,7 @@
+import sys
+
+sys.path.append("/home/perite/coach")
+
 from utils.tools_for_db import get_session_of_type_amount, get_free_session_amount
 import confg
 
