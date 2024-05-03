@@ -37,10 +37,6 @@ CallbackHandler.callers = {
     "coach": CoachCallbackHandler()
 }
 
-import sys
-
-print(sys.path)
-
 
 @shared_variables.bot.message_handler(commands=['start'])
 @error_catcher
