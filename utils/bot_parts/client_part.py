@@ -438,11 +438,11 @@ class ClientCallbackHandler(ClientHandler):
 
         text = f'''
 Майже готово! 
-Для підтвердження бронювання, будь ласка перейдіть за посиланням і зробіть донат від 200 грн протягом дня! 
-*Важливо!*: під час оплати, в полі для коментаря вкажіть номер сесії : {session.id}
+Для підтвердження бронювання, будь ласка перейдіть за [посиланням]({confg.DONATE_URL}) і зробіть донат від 200 грн протягом дня! 
+*Важливо!: під час оплати, в полі для коментаря вкажіть номер сесії : {session.id}*
 Дякуємо за підтримку проєкту ❤️
         '''
-        text += tx.session_representation_for_client(session, link_needed=True)
+        # text += tx.session_representation_for_client(session, link_needed=True)
 
         markup = types.InlineKeyboardMarkup()
         starting_datetime = datetime.datetime.combine(session.date, session.starting_time)
@@ -450,6 +450,8 @@ class ClientCallbackHandler(ClientHandler):
         starting_datetime = starting_datetime - datetime.timedelta(hours=2)
 
         google_url = f"https://calendar.google.com/calendar/u/0/r/eventedit?text=Сессія+з+коучем&dates={session.date:%Y%m%d}T{starting_datetime:%H%M%S}Z/{session.date:%Y%m%d}T{starting_datetime + datetime.timedelta(hours=1):%H%M%S}Z&details=Сессія+типу+{session.type}+з+коучем+{session.coach.full_name}"
+        markup.add(types.InlineKeyboardButton(text="Оплатити 200 грн",
+                                              url=confg.DONATE_URL))
         markup.add(types.InlineKeyboardButton(text="Додати в гугл календар",
                                               url=google_url))
 
