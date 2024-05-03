@@ -61,3 +61,5 @@ group_status_colors = {1: "background-color: #fff",
                        6: "background-color: #ff9999",
                        7: "background-color: #ffcc99",
                        8: "background-color: #47C677", }
+
+MAP_URL = "http://perite.pythonanywhere.com/regenerate"

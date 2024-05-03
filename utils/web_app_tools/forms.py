@@ -12,6 +12,7 @@ class LoginForm(FlaskForm):
 
 class EditSingleSessionForm(FlaskForm):
     delete_client = BooleanField("Очистити клієнта:")
+    is_paid = BooleanField("Оплачено:")
     add_client = SelectField("Додати клієнта", default="Нікого")
     status = SelectField("Статус")
     submit = SubmitField('Зберегти')

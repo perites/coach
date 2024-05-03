@@ -109,6 +109,7 @@
         <th>Ім'я клієнта</th>
         <th>Нік кліента</th>
         <th>Заброньовано о </th>
+        <th>Оплачено</th>
         <th>Управління</th>
 
 
@@ -126,6 +127,7 @@
             <td class="general-td">{{ session.client.full_name }}</td>
             <td class="general-td">{{ session.client.username }}</td>
             <td class="general-td"> {{ session.booked_at }}</td>
+            <td class="general-td"> {{ "Так" if session.is_paid else "Ні" }}</td>
             <td class="button-td">
                 <a target='_blank' href="/admin/edit/session/{{ session.id}}">
                      <button class="edit-button" > Редагувати </button>

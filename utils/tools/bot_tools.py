@@ -25,7 +25,7 @@ def error_catcher(func):
             return result
         except apihelper.ApiTelegramException as some_api_error:
 
-            eh = BotExceptionHandler(exception_obj=some_api_error, notify_users_and_admins=notify_users_and_admins)
+            eh = BotExceptionHandler(exception_obj=some_api_error)
             eh.handle_exception()
 
         except Exception as e:
@@ -45,13 +45,13 @@ class BotExceptionHandler:
 
     def handle_exception(self):
         if isinstance(self.exception_obj, CustomException) and self.exception_obj.ignore:
-            logging.info(f"Exception : {self.exception_obj} | WAS IGNORED")
+            bot_logger.info(f"Exception : {self.exception_obj} | WAS IGNORED")
             return
 
         additional_text = f"User: {self.chat_id} | user_notified: {bool(self.chat_id)}"
 
-        error_logger.exception(self.exception_obj)
-        error_logger.error(additional_text)
+        bot_error_logger.exception(self.exception_obj)
+        bot_error_logger.error(additional_text)
 
         self.notify_admins(additional_text)
         if self.chat_id:

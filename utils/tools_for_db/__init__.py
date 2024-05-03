@@ -9,8 +9,8 @@ from bot.bot_logging import bot_logger
 def update_sessions_status(func):
     def wrapper(*args, **kwargs):
         expired_sessions = Session.select().where(Session.status == 1,
-                                                  Session.date <= datetime.today().date(),
-                                                  Session.starting_time <= datetime.now(confg.KYIV_TZ).time())
+                                                  Session.date < datetime.today().date())
+        # Session.starting_time <= datetime.now(confg.KYIV_TZ).time())
         for session in expired_sessions:
             bot_logger.warning(
                 f"Session with id: {session.id} was canceled due to expiring")
@@ -35,6 +35,15 @@ def get_client_by_username(client_username):
     client = Client.get_or_none(Client.username == client_username)
 
     return client
+
+
+def get_session_with_client_on_date(client, date_str_start, date_str_end):
+    sessions = Session.select().where(Session.client == client,
+                                      Session.date > datetime.strptime(date_str_start, '%Y-%m-%d'),
+                                      Session.date < datetime.strptime(date_str_end, '%Y-%m-%d'),
+                                      Session.status << [2, 3, 5])
+
+    return sessions
 
 
 # COACH
@@ -83,6 +92,12 @@ def get_session_of_type_amount(type_name, start_date, end_date):
                                                     Session.date <= datetime.strptime(end_date, '%Y-%m-%d')).count()
 
     return free_session_amount, session_of_type_amount
+
+
+@update_sessions_status
+def get_free_session_amount():
+    free_session_amount = Session.select().where(Session.status == 1).count()
+    return free_session_amount
 
 
 @update_sessions_status

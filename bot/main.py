@@ -105,19 +105,17 @@ def start(message: types.Message):
 
     markup = types.ReplyKeyboardMarkup(row_width=1, resize_keyboard=True)
     markup.add(types.KeyboardButton("Індивідуальні сесії"))
-    markup.add(types.KeyboardButton("Групові формати"))
+    markup.add(types.KeyboardButton("Метафорична карта 🌄"))
+    # markup.add(types.KeyboardButton("Групові формати"))
     markup.add(types.KeyboardButton("Мої заброньовані сесії"))
-    markup.add(types.KeyboardButton("Подякувати проєкту ❤️"))
 
     print(f"{message.from_user.username} was authorized as user")
     bot_logger.info(f"{message.from_user.username} was authorized as user")
 
     text = """
-Вітаємо тебе в просторі проєкту ICFcoaching for WinE!
+Вітаємо тебе в просторі коучингової підтримки і особистого розвитку.
 
-Це простір коучингової підтримки і особистого розвитку.
-
-Тут ти можеш записатися на індивідуальні коуч сесії, а також на групові формати роботи до професіоналів ICF!
+Тут ти можеш записатися на індивідуальні коуч сесії до професіоналів ICF!
 """
 
     shared_variables.bot.send_message(message.chat.id, text, reply_markup=markup)
@@ -143,22 +141,37 @@ def handle_callback_query(call):
     call_handler.handle_caller()
 
 
-@shared_variables.bot.message_handler(func=lambda message: message.text == "Подякувати проєкту ❤️")
+@shared_variables.bot.message_handler(func=lambda message: message.text == "Метафорична карта 🌄")
 @error_catcher
-def see_my_session(message):
-    text = ''' 
-Дякуємо вам! Такі прояви підтримки дуже важливі для нас, дають підтвердження, що ми робимо дійсно корисну справу і надихають рухатися далі і генерувати нові цікаві ідеї для вас в цьому просторі!
-
-Звертаємо вашу увагу, що за донат від 20 грн ви отримуєте актуальну для вас метафоричну карту!
-'''
+def see_map(message):
+    text = '''
+Дякуємо, що піклуєтесь про себе ❤️
+     '''
 
     markup = types.InlineKeyboardMarkup(row_width=1)
     markup.add(
-        types.InlineKeyboardButton("Посилання на банку 🍯🫙", url=confg.DONATE_URL),
+        types.InlineKeyboardButton("Метафорична карта 🌄", url=confg.MAP_URL),
     )
 
     shared_variables.bot.send_message(message.chat.id, text, reply_markup=markup)
 
+
+# @shared_variables.bot.message_handler(func=lambda message: message.text == "Подякувати проєкту ❤️")
+# @error_catcher
+# def see_my_session(message):
+#     text = '''
+# Дякуємо вам! Такі прояви підтримки дуже важливі для нас, дають підтвердження, що ми робимо дійсно корисну справу і надихають рухатися далі і генерувати нові цікаві ідеї для вас в цьому просторі!
+#
+# Звертаємо вашу увагу, що за донат від 20 грн ви отримуєте актуальну для вас метафоричну карту!
+# '''
+#
+#     markup = types.InlineKeyboardMarkup(row_width=1)
+#     markup.add(
+#         types.InlineKeyboardButton("Посилання на банку 🍯🫙", url=confg.DONATE_URL),
+#     )
+#
+#     shared_variables.bot.send_message(message.chat.id, text, reply_markup=markup)
+#
 
 # Coach part
 @shared_variables.bot.message_handler(func=lambda message: message.text == "Подивитись мої активні сесії")
@@ -190,7 +203,8 @@ def see_my_booked_session(message: types.Message):
 @shared_variables.bot.message_handler(func=lambda message: message.text == "Групові формати")
 @error_catcher
 def book_group_session(message):
-    client_handler.book_group_session(message)
+    shared_variables.bot.send_message(message.chat.id, 'Станом на зараз запис на сесії групового типу не ведеться')
+    # client_handler.book_group_session(message)
 
 
 @shared_variables.bot.message_handler(func=lambda message: message.text == "Індивідуальні сесії")

@@ -75,6 +75,7 @@ class Text:
                 f"*Сторінка коуча*: [посилання]({session.coach.social_link})\n"
                 f"*Дата*: {session.date:{self.date_format}}\n"
                 f"*Час за Києвом*: {session.starting_time:{self.time_format}}\n"
+                f"*Оплачено*: {'Так' if session.is_paid == True else 'Ні'}\n"
                 )
         if type_needed:
             text += f"*Тип*: {session_type}\n"

@@ -8,7 +8,8 @@ from bot._user_states import USER_STATES
 
 from utils.tools_for_db import models
 from utils.tools_for_db import get_client_by_chat_id, get_group_session_by_id, get_group_type_sessions, \
-    get_group_session_with_client, get_unique_dates, get_session_with_client, get_session_by_id, get_sessions_on_date
+    get_group_session_with_client, get_unique_dates, get_session_with_client, get_session_by_id, get_sessions_on_date, \
+    get_session_with_client_on_date
 
 from utils.tools.bot_tools import CustomException, get_session_type_by_name
 from utils.tools.texts import tx
@@ -102,6 +103,10 @@ class ClientHandler:
                                                callback_data=f"client;no_sessions;{session_type.type_name}")
                 )
 
+        text += '''
+Після бронювання слота вам вам відобразіться посилання на банку. Будь ласка, для підтвердження бронювання перейдіть за посиланням і зробіть донат від 200 грн протягом дня! 
+Дякуємо за підтримку проєкту ❤️
+        '''
         return text, markup
 
     def process_client_contact(self, message, is_contact):
@@ -228,15 +233,15 @@ class ClientCallbackHandler(ClientHandler):
         session = get_group_session_by_id(data)
         client = get_client_by_chat_id(chat_id)
 
-        if get_group_session_with_client(client, group_type):
-            text = f"""
-           Ви вже скористалися безкоштовною можливістю з групового коучингу або мастермайнду. У вас є  можливість записатися на тему групової роботи за Донат від 200 грн на фонд проєкту ICFcoaching for WinE. Гроші фонду будуть направлені на розвиток проєкту!
-
-           Записатися можна за посиланням: [посилання](https://forms.gle/SLyN6LpbZ1vfCA9M9)
-           """
-            self.bot.edit_message_text(chat_id=chat_id, message_id=message_id,
-                                       text=text)
-            return
+        # if get_group_session_with_client(client, group_type):
+        #     text = f"""
+        #    Ви вже скористалися безкоштовною можливістю з групового коучингу або мастермайнду. У вас є  можливість записатися на тему групової роботи за Донат від 200 грн на фонд проєкту ICFcoaching for WinE. Гроші фонду будуть направлені на розвиток проєкту!
+        #
+        #    Записатися можна за посиланням: [посилання](https://forms.gle/SLyN6LpbZ1vfCA9M9)
+        #    """
+        #     self.bot.edit_message_text(chat_id=chat_id, message_id=message_id,
+        #                                text=text)
+        #     return
 
         markup = types.InlineKeyboardMarkup(row_width=2)
         markup.add(
@@ -374,16 +379,23 @@ class ClientCallbackHandler(ClientHandler):
         user_state = USER_STATES.get(chat_id)
         if not user_state:
             raise CustomException(f"No state associated with this chat_id", chat_id)
-        session_type = user_state.session_type
-        if get_session_with_client(client, session_type):
-            text = f"""
-        Ви вже раніше забронювали чи відвідали безкоштовну сесію цього типу, *сесія НЕ була заброньована*.
-        Ви можете отримати сесію за донат, для цього залиште заявку в формі:
-        [посилання на форму]({confg.BOOK_SESSION_LINK})
-        """
-            self.bot.edit_message_text(chat_id=chat_id, message_id=message_id,
-                                       text=text)
+
+        if len(get_session_with_client_on_date(client, "2024-05-01", "2024-05-21")) >= 2:
+            text = f"Ви досягли ліміту в 2 сесії, сесія не була заброньована\nЯкщо у вас з'явились запитання будь ласка напишіть {confg.SUPPORT_USERNAME}"
+            bot_logger.warning(
+                f"Client: {client.id} was TRYING to book session {session.id}, but can`t because he has unpaid booked sessions")
+            self.bot.edit_message_text(chat_id=chat_id, message_id=message_id, text=text)
             return
+        # session_type = user_state.session_type
+        # if get_session_with_client(client, session_type):
+        #     text = f"""
+        # Ви вже раніше забронювали чи відвідали безкоштовну сесію цього типу, *сесія НЕ була заброньована*.
+        # Ви можете отримати сесію за донат, для цього залиште заявку в формі:
+        # [посилання на форму]({confg.BOOK_SESSION_LINK})
+        # """
+        #     self.bot.edit_message_text(chat_id=chat_id, message_id=message_id,
+        #                                text=text)
+        #     return
 
         markup = types.InlineKeyboardMarkup(row_width=2)
         markup.add(types.InlineKeyboardButton(text="Так", callback_data=f'client;solo_confirm;{session.id}'))
@@ -416,13 +428,29 @@ class ClientCallbackHandler(ClientHandler):
             raise CustomException(f"No state associated with this chat_id", chat_id)
         session.type = user_state.session_type.type_name
         session.status = 2
+        session.is_paid = False
         session.booked_at = datetime.datetime.now(confg.KYIV_TZ)
         session.save()
 
-        text = "Ви успішно забронювали сесію!"
+        text = f'''
+Майже готово! 
+Для підтвердження бронювання, будь ласка перейдіть за посиланням і зробіть донат від 200 грн протягом дня! 
+*Важливо!*: під час оплати, в полі для коментаря вкажіть номер сесії : {session.id}
+Дякуємо за підтримку проєкту ❤️
+        '''
         text += tx.session_representation_for_client(session, link_needed=True)
+
+        markup = types.InlineKeyboardMarkup()
+        starting_datetime = datetime.datetime.combine(session.date, session.starting_time)
+        starting_datetime = starting_datetime.replace(tzinfo=confg.KYIV_TZ)
+        starting_datetime = starting_datetime - datetime.timedelta(hours=2)
+
+        google_url = f"https://calendar.google.com/calendar/u/0/r/eventedit?text=Сессія+з+коучем&dates={session.date:%Y%m%d}T{starting_datetime:%H%M%S}Z/{session.date:%Y%m%d}T{starting_datetime + datetime.timedelta(hours=1):%H%M%S}Z&details=Сессія+типу+{session.type}+з+коучем+{session.coach.full_name}"
+        markup.add(types.InlineKeyboardButton(text="Додати в гугл календар",
+                                              url=google_url))
+
         self.bot.edit_message_text(chat_id=chat_id, message_id=message_id,
-                                   text=text, )
+                                   text=text, reply_markup=markup)
 
         text = tx.notify_coach_session_booked(session)
         self.bot.send_message(chat_id=session.coach.chat_id,

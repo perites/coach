@@ -1,4 +1,4 @@
-from utils.tools_for_db import get_session_of_type_amount
+from utils.tools_for_db import get_session_of_type_amount, get_free_session_amount
 import confg
 
 
@@ -7,22 +7,29 @@ class SessionType:
     info_text = "info_text"
     _button_text = "button_text"
     ukr_name = "ukr_name"
-    no_session_text = "no_session_text"
+    # no_session_text = "no_session_text"
+    no_session_text = "Зараз нажаль немає вільних слотів на індивідуальні коуч сесії. Чекайте анонсів в чаті проєкту!"
 
     def __init__(self, start_date, end_date):
         self.start_date = start_date
         self.end_date = end_date
 
     def button_text(self):
-        free_session_amount, session_of_type_amount = get_session_of_type_amount(self.type_name, self.start_date,
-                                                                                 self.end_date)
+        free_session_amount = get_free_session_amount()
+        if free_session_amount > 0:
+            return self._button_text, True
+        elif free_session_amount == 0:
+            return self._button_text, False
 
-        available_sessions_of_type_amount = confg.MAX_SESSIONS_OF_ONE_TYPE - session_of_type_amount
-        available_sessions_amount = min(free_session_amount, available_sessions_of_type_amount)
-        if available_sessions_amount <= 0:
-            return f"{self._button_text}", False
-
-        return f"{self._button_text} | Доступно {available_sessions_amount} з {confg.MAX_SESSIONS_OF_ONE_TYPE}", True
+        # free_session_amount, session_of_type_amount = get_session_of_type_amount(self.type_name, self.start_date,
+        #                                                                          self.end_date)
+        #
+        # available_sessions_of_type_amount = confg.MAX_SESSIONS_OF_ONE_TYPE - session_of_type_amount
+        # available_sessions_amount = min(free_session_amount, available_sessions_of_type_amount)
+        # if available_sessions_amount <= 0:
+        #     return f"{self._button_text}", False
+        #
+        # return f"{self._button_text} | Доступно {available_sessions_amount} з {confg.MAX_SESSIONS_OF_ONE_TYPE}", True
 
 
 class Career(SessionType):
@@ -43,9 +50,10 @@ class Career(SessionType):
 
     _button_text = "Карʼєрний коучинг"
     ukr_name = "Кар'єрний коучинг"
-    no_session_text = ("Нажаль зараз всі місця на кар'єрний коучинг закінчились, "
-                       "перейдіть за посиланням якщо ви хочете забронювати сесію саме цього типу\n"
-                       f"[посилання]({confg.BOOK_SESSION_LINK})")
+
+    # no_session_text = ("Нажаль зараз всі місця на кар'єрний коучинг закінчились, "
+    #                    "перейдіть за посиланням якщо ви хочете забронювати сесію саме цього типу\n"
+    #                    f"[посилання]({confg.BOOK_SESSION_LINK})")
 
     def __init__(self, start_date, end_date):
         super().__init__(start_date, end_date)
@@ -68,9 +76,10 @@ class Leadership(SessionType):
     """
     _button_text = "Коучинг лідерства"
     ukr_name = "Коучинг лідерства"
-    no_session_text = ("Нажаль зараз всі місця на коучинг лідерства закінчились, "
-                       "перейдіть за посиланням якщо ви хочете забронювати сесію саме цього типу\n"
-                       f"[посилання]({confg.BOOK_SESSION_LINK})")
+
+    # no_session_text = ("Нажаль зараз всі місця на коучинг лідерства закінчились, "
+    #                    "перейдіть за посиланням якщо ви хочете забронювати сесію саме цього типу\n"
+    #                    f"[посилання]({confg.BOOK_SESSION_LINK})")
 
     def __init__(self, start_date, end_date):
         super().__init__(start_date, end_date)
@@ -90,9 +99,9 @@ class Relationship(SessionType):
     _button_text = "Коучинг стосунків"
     ukr_name = "Коучинг стосунків"
 
-    no_session_text = ("Нажаль зараз всі місця на коучинг стосунків закінчились, "
-                       "перейдіть за посиланням якщо ви хочете забронювати сесію саме цього типу\n"
-                       f"[посилання]({confg.BOOK_SESSION_LINK})")
+    # no_session_text = ("Нажаль зараз всі місця на коучинг стосунків закінчились, "
+    #                    "перейдіть за посиланням якщо ви хочете забронювати сесію саме цього типу\n"
+    #                    f"[посилання]({confg.BOOK_SESSION_LINK})")
 
     def __init__(self, start_date, end_date):
         super().__init__(start_date, end_date)

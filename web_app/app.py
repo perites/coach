@@ -31,24 +31,12 @@ csfr = CSRFProtect(app)
 app.config['IMAGES'] = 'templates/images'
 
 
-@app.route("/login", methods=["GET", "POST"])
-@error_catcher
-def login():
-    if request.method == "GET":
-        return render_template("login.html", form=LoginForm())
-
-    form = request.form.to_dict()
-    username = form["username"]
-    password = form["password"]
-
-    return authenticate(username, password)
-
-
 @app.route('/')
 def home():
     return redirect("/sessions")
 
 
+@error_catcher
 @app.route('/sessions')
 def one_week_sessions():
     request_dict = request.args.to_dict()
@@ -67,6 +55,19 @@ def one_week_sessions():
                            week_number=week_number,
                            first_last_dates=first_last_dates,
                            )
+
+
+@error_catcher
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "GET":
+        return render_template("login.html", form=LoginForm())
+
+    form = request.form.to_dict()
+    username = form["username"]
+    password = form["password"]
+
+    return authenticate(username, password)
 
 
 @app.route('/admin/sessions')
@@ -98,6 +99,7 @@ def edit_session(session_id):
         return render_template("error.html", message="Індивідуальна сесія з таким айді не знайдена")
 
     form = EditSingleSessionForm()
+    form.is_paid.default = session.is_paid
     form.status.choices = list(map(lambda n: f"{n[1][1]} {n[0]}", confg.SESSIONS_STATUSES.items()))
     form.status.default = f"{confg.SESSIONS_STATUSES[session.status][1]} {session.status}"
     form.add_client.choices = list(
@@ -135,7 +137,10 @@ def edit_session_post(session_id):
         session.status = 2
         logging.info(
             f"Session with id {session.id}| Added client with id {client_id} successfully, old client id: {old_client_id}")
-
+    if form.get('is_paid'):
+        session.is_paid = True
+    else:
+        session.is_paid = False
     session.save()
     logging.info(f"Session with id {session.id} | All changes applied successfully.")
     return redirect(f"/admin/edit/session/{session_id}")

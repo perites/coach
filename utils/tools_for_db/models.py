@@ -1,5 +1,5 @@
 from peewee import PostgresqlDatabase, Model, TextField, DateField, TimeField, ForeignKeyField, \
-    IntegerField, DateTimeField
+    IntegerField, DateTimeField, BooleanField
 import confg
 
 db = PostgresqlDatabase(confg.DATABASE_INFO["name"],
@@ -39,6 +39,7 @@ class Session(Model):
     type = TextField(null=True)
     status = IntegerField()
     booked_at = DateTimeField()
+    is_paid = BooleanField(null=True)
 
     class Meta:
         database = db
