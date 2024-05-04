@@ -8,6 +8,8 @@ if not bot_logger.handlers:
     _bot_handler.setFormatter(_bot_formatter)
     bot_logger.addHandler(_bot_handler)
     bot_logger.setLevel(logging.INFO)
+    print("Bot logger created")
+    bot_logger.info('Bot logger created')
 
 bot_error_logger = logging.getLogger('bot_error_logger')
 if not bot_error_logger.handlers:
@@ -16,3 +18,5 @@ if not bot_error_logger.handlers:
     _bot_error_handler.setFormatter(_bot_error_formatter)
     bot_error_logger.addHandler(_bot_error_handler)
     bot_error_logger.setLevel(logging.ERROR)
+    print("Bot error logger created")
+    bot_error_logger.info("Bot error logger created")
