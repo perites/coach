@@ -223,7 +223,6 @@ def run_bot_pulling():
         print(f"now:{datetime.datetime.now()} kyiv tz: {datetime.datetime.now(confg.KYIV_TZ)} --- starting bot")
         BOT_RUNNING = True
         shared_variables.bot.polling(non_stop=True)
-
     except Exception as bot_error:
         print(f"BOT STOPPED WORKING | INITIALIZING RESTARTING | ERROR : {bot_error} ")
         bot_error_logger.fatal(f"BOT STOPPED WORKING | INITIALIZING BOT RESTARTING | ERROR : {bot_error} ")
@@ -248,12 +247,13 @@ def start_program():
     global BOT_RUNNING, SCHEDULER_RUNNING
     while True:
         if not BOT_RUNNING:
-            start_bot_thread = threading.Thread(target=run_bot_pulling)
+            start_bot_thread = threading.Thread(target=run_bot_pulling, daemon=True)
             start_bot_thread.start()
         if not SCHEDULER_RUNNING:
-            run_scheduler_thread = threading.Thread(target=run_run_scheduler)
+            run_scheduler_thread = threading.Thread(target=run_run_scheduler, daemon=True)
             run_scheduler_thread.start()
-
+        #
+        # print("------", sys.exit())
         time.sleep(1)
 
 
