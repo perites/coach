@@ -252,7 +252,7 @@ def edit_group_session_post(session_id):
     return redirect(f'/admin/edit/group/{session_id}')
 
 
-@app.route('/regenerate')
+@app.route('/mak4u ')
 def regenerate():
     random_index = random.randint(0, len(confg.IMAGES_NAMES) - 1)
     index = random_index.to_bytes(length=1, byteorder='big')

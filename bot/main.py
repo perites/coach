@@ -252,8 +252,7 @@ def start_program():
         if not SCHEDULER_RUNNING:
             run_scheduler_thread = threading.Thread(target=run_run_scheduler, daemon=True)
             run_scheduler_thread.start()
-        #
-        # print("------", sys.exit())
+
         time.sleep(1)
 
 
